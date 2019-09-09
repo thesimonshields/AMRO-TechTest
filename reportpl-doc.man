@@ -1,0 +1,376 @@
+REPORT(1)             User Contributed Perl Documentation            REPORT(1)
+
+
+
+NNAAMMEE::
+       AMRO Technical Test Program report.pl
+
+PPRREEAAMMBBLLEE::
+       This program creates a csv file according to the requirements specified
+       in the csv specification text file and from fixed string length data
+       file and field names specification file.
+
+PPRROOGGRRAAMM SSPPEECCIIFFIICCAATTIIOONNSS
+        System A has produced the file Input.txt, which is a Fixed Width text file that contains the Future Transactions done by client 1234 and 4321.
+
+        Requirements:
+        The Business user would like to see the Total Transaction Amount of each unique product they have done for the day
+        The Business user would like a program that can read in the Input file and generate a daily summary report
+        The Daily summary report should be in CSV format (called Output.csv) with the following specifications
+
+        The CSV has the following Headers
+        - Client_Information
+        - Product_Information
+        - Total_Transaction_Amount
+
+        Client_Information should be a combination of the CLIENT TYPE, CLIENT NUMBER, ACCOUNT NUMBER, SUBACCOUNT NUMBER fields from Input file
+        Product_Information should be a combination of the EXCHANGE CODE, PRODUCT GROUP CODE, SYMBOL, EXPIRATION DATE
+        Total_Transaction_Amount should be a Net Total of the (QUANTITY LONG - QUANTITY SHORT) values for each client per product
+
+        Notes: Each Record in the input file represents ONE Transaction from the client for a particular product. Please focus on code re-usability.
+
+        Please submit the following:
+        1. Documentation should include, instruction on how to run the software and any troubleshooting.
+        2. Complete Perl code with unit tests.
+        3. Log file
+        4. Output.csv
+
+
+        We will be looking at coding style, solution design and reusability.
+
+AAUUTTHHOORR
+        Simon Shields
+        thesimonshields@gmail.com
+        0491 269 068
+
+VVEERRSSIIOONN
+       1.01 6Sep2019
+
+OOPPTTIIOONNSS
+       1. --hheellpp - print this help information to stdout and quit,
+
+       2. --vveerrssiioonn - print the software version information to stdout and
+          quit,
+
+       3. --sshhoowwffiieellddddeeffss - print field definitions to stdout after the field
+          definitions file has been parsed.  Do this to check that any changes
+          made to the field definitions file have been correctly parsed. Then
+          exit the program.
+
+       4. --sshhoowwrreeccoorrddss - print field names and values to stdout for every
+          record in the data file parsed using the field definitions in the
+          field definitions text file in Name equals Value Pairs (NVP) format.
+          Then exit the program.
+
+       5. --sshhoowwrreeccoorrddssccssvv - print field names and values to stdout for every
+          record in the data file parsed using the field definitions in the
+          field definitions text file in CSV format. Then exit the program.
+
+       6. --oouuttppuutt22bbootthh - Output the final csv file to stdout as well as the
+          output file.
+
+       7. --sshhoowwffiinnaallttoottaallss - print Final Total_Transaction_Amount's and keys,
+          on separate line, to stdout after the csv data has been output.
+
+       8. --dduummppvvaarrss - Use this option for debugging purposes to see what the
+          values in the programs associative arrays are to help establish the
+          veracity of the programs integrity and locate process errors. Dumps
+          the contents of the program to stdout after processing is complete.
+
+       9. --ddeebbuugg _[_1_|_2_|_3_] - expects an integer value. Only 1,2 or 3 will
+          produce output
+
+          1. --ddeebbuugg 11 - prints csv fieldname's and value being gathered during
+             the _g_a_t_h_e_r_c_s_v_d_a_t_a process,
+
+          2. --ddeebbuugg 22 - prints csv record number and line output being
+             gathered during the _g_a_t_h_e_r_c_s_v_d_a_t_a process,
+
+          3. --ddeebbuugg 33 - prints csv fieldname, record fieldname and record
+             value being gathered during the _g_a_t_h_e_r_c_s_v_d_a_t_a process,
+
+       10.
+          --ccssvvsseepp [[,,]] -expects a character the default is a coma _,. It is the
+          csv field separator character for output only.  The program assumes
+          a ',' for the csv input files.
+
+       11.
+          --ffiieellddnnaammeeffiillee _[_f_i_e_l_d_n_a_m_e_s_._t_x_t_] - expects a string, the default is
+          _f_i_e_l_d_n_a_m_e_s_._t_x_t. It is the text file containing the fieldnames and
+          the lengths of their values in order in csv comma separated
+          variable, format.
+
+       12.
+          --iinnppuuttddaattaaffiillee _[_I_n_p_u_t _(_2_) _(_2_)_._t_x_t_] - expects a string, the default
+          is _I_n_p_u_t _(_2_) _(_2_)_._t_x_t. It is the data file containing all the records
+          with the field values to be parsed and consolidated into csv fields
+          and output in csv format.
+
+       13.
+          --ccssvvssppeeccffiillee _[_c_s_v_-_s_p_e_c_._t_x_t_] - expects a string, the default is
+          _c_s_v_-_s_p_e_c_._t_x_t.
+
+       14.
+          --llooggffiillee _[_r_e_p_o_r_t_._l_o_g_] - expects a string, the default is _r_e_p_o_r_t_._l_o_g.
+          It is the program's log file which is rewritten every time the
+          program runs. The log file will contain any error messages if the
+          program exits early which will occur if any of it's input files
+          can't be read or opened for reading or it's output files can't be
+          opened for writing. All modules that are invoked are logged on entry
+          and exit with a date and time stamp.
+
+       15.
+          --oouuttppuuttffiillee _O_u_t_p_u_t_._c_s_v - expects a string,the default is _O_u_t_p_u_t_._c_s_v,
+          and is the name of the output file to contain the csv records
+          created by the program.
+
+MMAAIINN
+       Calls _n_e_w _r_e_p_o_r_t _s_e_e _M_O_D_U_L_E_S _s_u_b _n_e_w then
+
+       It executes all the modules in order to produce the required program
+       output.
+
+       It runs the processes that establish parameter directions. _g_e_t_p_a_r_a_m_s
+
+       It initializes all necessary variables. _i_n_i_t_i_a_l_i_z_e
+
+       It starts the logging process. _o_p_e_n_l_o_g_f_i_l_e.
+
+       and closes the log file with _c_l_o_s_e_l_o_g_f_i_l_e before exiting.
+
+MMOODDUULLEESS
+   _s_u_b _n_e_w
+       When a new _r_e_p_o_r_t object is created this process blesses the $$mmee
+       variable which contains all the programs private variables to be shared
+       by processes in the report class or package.  It initializes those
+       variables with their default values.
+
+   _s_u_b _i_n_i_t_i_a_l_i_z_e
+       This process initializes all the default values.
+
+   _s_u_b _v_e_r_s_i_o_n
+       Prints programs version details to stdout and returns the version
+       information to the calling process
+
+   _s_u_b _g_e_t_p_a_r_a_m_s
+       Processes the command line or CGI parameter values and puts the results
+       in the _$_m_e_-_{_o_p_t_i_o_n_s_} associative array.  Input files for reading are
+       checked for existence using the _-_f perl file internal operator before
+       being accepted into the _o_p_t_i_o_n_s associative array.
+
+   _s_u_b _h_e_l_p
+       runs ppeerrllddoocc rreeppoorrtt..ppmm displaying this file.
+
+   _s_u_b _p_a_r_s_e_f_i_e_l_d_n_a_m_e_s
+       Creates log entries on entering and leaving the module.  Splits fields
+       in the fieldnames specification file for each line using a comma as the
+       separator. Stores the field name,length and calculated start and finish
+       string positions in the _$_m_e_-_{_f_i_e_l_d_s_} associative array.  Stores the
+       field names in an array in their file order in the _$_m_e_-_{_f_i_e_l_d_s_}_{___l_i_s_t_}
+       variable.
+
+   _s_u_b _s_h_o_w_f_i_e_l_d_d_e_f_i_n_i_t_i_o_n_s
+       Creates log entries on entering and leaving the module. Displays the
+       contents of the _$_m_e_-_{_f_i_e_l_d_s_} associative array.
+
+   _s_u_b _p_a_r_s_e_d_a_t_a_f_i_l_e
+       Creates log entries on entering and leaving the module.  Uses
+       _$_m_e_-_{_f_i_e_l_d_s_} associated array created in the previous process and the
+       contents of the data file to fill the new associative array
+       _$_m_e_-_{_r_e_c_o_r_d_s_} with the data file broken into individual fields and
+       their associative values.
+
+   _s_u_b _s_h_o_w_r_e_c_o_r_d_s
+       Prints the contents of the _$_m_e_-_{_r_e_c_o_r_d_s_} associative array created in
+       the _s_u_b _p_a_r_s_e_d_a_t_a_f_i_l_e process. It has 1 possible parameter ccssvv. If ccssvv
+       is _0 records are displayed in NVP (Name equals Value pairs format)
+       otherwise records are shown in CSV format.
+
+   _s_u_b _p_a_r_s_e_c_s_v_s_p_e_c
+       Fills the new associative array _$_m_e_-_{_c_s_v_s_p_e_c_f_i_l_e_} with the information
+       encapsulated in the csv specifications file.  The csv specifications
+       file is formatted as follows
+
+        csvfieldname1=datafieldname1,datafieldname2,.....
+        csvfieldname2=datafieldname1,datafieldname2,.....
+        csvfieldname3=datafieldname1,datafieldname2,.....
+        ...
+        Total_Transaction_Amount=datafieldname1,datafieldname2,.....
+        operation=I<[subtract|add]>
+        Total_Transaction_Keyfields=datafieldname1,datafieldname2,.....
+
+       The ooppeerraattiioonn value tells the program how to calculate the
+       TToottaall__TTrraannssaaccttiioonn__AAmmoouunntt for each data record. If  ooppeerraattiioonn is
+       _s_u_b_t_r_a_c_t then TToottaall__TTrraannssaaccttiioonn__AAmmoouunntt =
+       datafieldname1+datafieldname2+datafieldname3.... if ooppeerraattiioonn is not
+       _s_u_b_t_r_a_c_t then TToottaall__TTrraannssaaccttiioonn__AAmmoouunntt =
+       datafieldname1-datafieldname2-datafieldname3....
+
+       The specifications dictate TToottaall__TTrraannssaaccttiioonn__AAmmoouunntt is the sum for
+       client and product. It doesn't specify which data fields to distinguish
+       client and product so these data fields were chosen by default but can
+       be modified CCLLIIEENNTT__NNUUMMBBEERR,,PPRROODDUUCCTT__GGRROOUUPP__CCOODDEE,,SSYYMMBBOOLL.
+
+       Thus the TToottaall__TTrraannssaaccttiioonn__AAmmoouunntt key definition is specified in the
+       TToottaall__TTrraannssaaccttiioonn__KKeeyyffiieellddss value which by default is
+       CCLLIIEENNTT__NNUUMMBBEERR,,PPRROODDUUCCTT__GGRROOUUPP__CCOODDEE,,SSYYMMBBOOLL.
+
+       The summation variables are initialized to 0 by runnung through all the
+       records and finding the set of unique keys.
+
+   _s_u_b _g_a_t_h_e_r_c_s_v_d_a_t_a
+       This process gather's the information gleaned from the other
+       subroutines to format the report output for all the data records in
+       _$_m_e_-_{_r_e_c_o_r_d_s_}.
+
+       The report output is stored in the _$_m_e_-_{_c_s_v_r_e_c_o_r_d_s_} associative array.
+
+   _s_u_b _o_u_t_p_u_t_c_s_v_d_a_t_a
+       Uses  _$_m_e_-_{_c_s_v_r_e_c_o_r_d_s_} associative array sorted on CClliieenntt__IInnffoorrmmaattiioonn
+       and PPrroodduucctt__IInnffoorrmmaattiioonn to format the output string and oouuttppuutt the
+       string to the oouuttppuutt ffiillee default _O_u_t_p_u_t_._c_s_v and stdout if requested
+       via the --oouuttppuutt22bbootthh command line option.
+
+   _s_u_b _o_p_e_n_l_o_g_f_i_l_e
+       opens the log file default _r_e_p_o_r_t_._l_o_g. Log file handle is _L_O_G_F_I_L_E.
+
+   _s_u_b _l_o_g_e_n_t_r_y
+       Creates an entry in the log file with a date time stamp.
+
+       E.g.
+        20190907-202520:-start report
+        YYYYMMDD-HHMMSS:- _M_e_s_s_a_g_e _s_e_n_t _a_s _a _p_a_r_a_m_e_t_e_r
+
+   _s_u_b _c_l_o_s_e_l_o_g_f_i_l_e
+       Closes the log file called from the master program
+
+       e.g.  my $report = new report ; $report->_c_l_o_s_e_l_o_g_f_i_l_e_(_) ;
+
+   _s_u_b _s_h_o_w_f_i_n_a_l_t_o_t_a_l_s
+       Show the summed Total Transaction Amounts based on the data records
+       selected as the key fields to delineate client and product.
+
+       e.g.
+
+        Final Total Transaction Amounts
+        CL  123400020001SGX FUNK    20100910,CL  123400030001CME FUN1    20100910,CL  123400030001CME FUNK.   20100910,CL  432100020001SGX FUNK    20100910,CL  432100030001CME FUN1    20100910
+        -52,285,-215,46,-79
+
+_F_I_L_E _F_O_R_M_A_T_S
+   _I_N_P_U_T _F_I_L_E_S
+       1. iinnppuuttddaattaaffiillee - Must be a fixed length text file where each line has
+          one record composed of fixed length fields without any field
+          separating characters.  Especially no CCttrrll characters.
+
+       2. ffiieellddnnaammeeffiillee - Must be in data field order (the order fields appear
+          in each record in the fixed length data file) comma separated
+          variable ccssvv format, the first field is the name of the data field
+          the second is it's length.
+
+          e.g.
+
+           RECORD_CODE,3
+           CLIENT_TYPE,4
+           CLIENT_NUMBER,4
+
+       3. ccssvvssppeeccffiillee - It contains the names of the csv fields and what data
+          field values each csv field will be composed of. It also specifies
+          how the TToottaall__TTrraannssaaccttiioonn__AAmmoouunntt is to be computed (what data fields
+          to add or subtract per data record) and what data fields are used to
+          create the key field based on the client and product.  The key field
+          by default is set by default to all the fields for client and
+          product.
+           _C_L_I_E_N_T___T_Y_P_E_,_C_L_I_E_N_T___N_U_M_B_E_R_,_A_C_C_O_U_N_T___N_U_M_B_E_R_,_S_U_B_A_C_C_O_U_N_T___N_U_M_B_E_R_,_E_X_C_H_A_N_G_E___C_O_D_E_,_P_R_O_D_U_C_T___G_R_O_U_P___C_O_D_E_,_S_Y_M_B_O_L_,_E_X_P_I_R_A_T_I_O_N___D_A_T_E.
+
+          This is defined in the specifications as follows :-
+
+          TToottaall__TTrraannssaaccttiioonn__AAmmoouunntt sshhoouulldd bbee aa NNeett TToottaall ooff tthhee ((QQUUAANNTTIITTYY LLOONNGG
+          -- QQUUAANNTTIITTYY SSHHOORRTT)) vvaalluueess ffoorr eeaacchh _c_l_i_e_n_t per _p_r_o_d_u_c_t.
+
+          The key field needs to include all the fields for Client and
+          product.
+
+          e.g.
+
+           Client_Information=CLIENT_TYPE,CLIENT_NUMBER,ACCOUNT_NUMBER,SUBACCOUNT_NUMBER
+           Product_Information=EXCHANGE_CODE,PRODUCT_GROUP_CODE,SYMBOL,EXPIRATION_DATE
+           Total_Transaction_Amount=QUANTITY_LONG,QUANTITY_SHORT
+           operation=subtract
+           Total_Transaction_Keyfields=CLIENT_TYPE,CLIENT_NUMBER,ACCOUNT_NUMBER,SUBACCOUNT_NUMBER,EXCHANGE_CODE,PRODUCT_GROUP_CODE,SYMBOL,EXPIRATION_DATE
+
+   _O_U_T_P_U_T _F_I_L_E_S
+       1. llooggffiillee - Is a text file containing log entries made by the program
+          reporting it's execution process. Each line is date and time
+          stamped. The data/time stamp is separated by a :: with the message
+          text.
+
+          e.g.
+           20190907-204753:-start report
+           20190907-204753:-entering parsefieldnames
+
+       2. oouuttppuuttffiillee - This file contains the program's Daily summary report
+          as specified in the above PPRROOGGRRAAMM SSPPEECCIIFFIICCAATTIIOONNSS above. A CCSSVV
+          formatted file default name of OOuuttppuutt..ccssvv with the headers
+           - Client_Information
+           - Product_Information
+           - Total_Transaction_Amount
+
+          e.g.
+
+           Client_Information,Product_Information,Total_Transaction_Amount
+           1 CL  432100020001,SGX FUNK    20100910,1
+           2 CL  432100020001,SGX FUNK    20100910,2
+           3 CL  432100020001,SGX FUNK    20100910,3
+
+_T_R_O_U_B_L_E_S_H_O_O_T_I_N_G
+       1. Clean data files of escape and control characters particularly CCttrrll--
+          MM which often appears in Windows based text files.
+
+       2. Do a _d_o_s_2_u_n_i_x conversion converting carriage return line feed end of
+          line characters to line feeds only.
+
+       3. Make sure file format's specified in _f_i_l_e _f_o_r_m_a_t _f_i_l_e is accurate
+          for the data file.
+
+       4. Fieldname's cannot be called __lliisstt
+
+_R_E_S_E_R_V_E_D _W_O_R_D_S
+       WWoorrddss uusseedd iinn tthhee pprrooggrraamm''ss ddaattaa ssttrrccttuurreess..
+
+       1. __lliisstt - used in data structures rreeccoorrddss,, ffiieellddss
+       2. ooppeerraattiioonn - used in ssuubb ggaatthheerrccssvvddaattaa
+       3. ssuubbttrraacctt - used in ssuubb ggaatthheerrccssvvddaattaa
+       4. TToottaall__TTrraannssaaccttiioonn__AAmmoouunntt - used in ssuubb ppaarrsseeccssvvssppeecc
+       5. TToottaall__TTrraannssaaccttiioonn__KKeeyyffiieellddss - used in ssuubb ppaarrsseeccssvvssppeecc
+       6. CClliieenntt__IInnffoorrmmaattiioonn, PPrroodduucctt__IInnffoorrmmaattiioonn used to sort the final
+       output in ssuubb oouuttppuuttccssvvddaattaa.
+
+_D_E_P_E_N_D_E_N_C_I_E_S
+       Uses report.pm which uses Time::Local, Getopt::Long, CGI and
+       Data::Dumper.
+
+PPOODD EERRRROORRSS
+       Hey! TThhee aabboovvee ddooccuummeenntt hhaadd ssoommee ccooddiinngg eerrrroorrss,, wwhhiicchh aarree eexxppllaaiinneedd
+       bbeellooww::
+
+       Around line 160:
+           You have '=item 9' instead of the expected '=item 10'
+
+       Around line 165:
+           You have '=item 10' instead of the expected '=item 11'
+
+       Around line 170:
+           You have '=item 11' instead of the expected '=item 12'
+
+       Around line 176:
+           You have '=item 12' instead of the expected '=item 13'
+
+       Around line 180:
+           You have '=item 13' instead of the expected '=item 14'
+
+       Around line 187:
+           You have '=item 14' instead of the expected '=item 15'
+
+
+
+perl v5.18.2                      2019-09-08                         REPORT(1)

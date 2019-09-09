@@ -1,0 +1,26 @@
+System A has produced the file Input.txt, which is a Fixed Width text file that contains the Future Transactions done by client 1234 and 4321.
+
+Requirements:
+The Business user would like to see the Total Transaction Amount of each unique product they have done for the day
+The Business user would like a program that can read in the Input file and generate a daily summary report
+The Daily summary report should be in CSV format (called Output.csv) with the following specifications
+
+The CSV has the following Headers
+- Client_Information
+- Product_Information
+- Total_Transaction_Amount
+
+Client_Information should be a combination of the CLIENT TYPE, CLIENT NUMBER, ACCOUNT NUMBER, SUBACCOUNT NUMBER fields from Input file
+Product_Information should be a combination of the EXCHANGE CODE, PRODUCT GROUP CODE, SYMBOL, EXPIRATION DATE
+Total_Transaction_Amount should be a Net Total of the (QUANTITY LONG - QUANTITY SHORT) values for each client per product
+
+Notes: Each Record in the input file represents ONE Transaction from the client for a particular product. Please focus on code re-usability. 
+
+Please submit the following:
+1. Documentation should include, instruction on how to run the software and any troubleshooting.
+2. Complete Perl code with unit tests.
+3. Log file
+4. Output.csv
+
+
+We will be looking at coding style, solution design and reusability.
